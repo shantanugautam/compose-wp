@@ -1,6 +1,6 @@
-# [Bedrock](http://roots.io/wordpress-stack/)
+# AutoPress
 
-Bedrock is a modern WordPress stack that helps you get started with the best development tools and project structure.
+AutoPress is a fork from [Bedrock](http://roots.io/wordpress-stack/) to simplify setting up a module wordpress development stack
 
 # ToC
 
@@ -160,7 +160,7 @@ The organization of Bedrock is similar to putting WordPress in its own subdirect
 * `wp-config.php` remains in the `web/` because it's required by WP, but it only acts as a loader. The actual configuration files have been moved to `config/` for better separation.
 * Capistrano configs are also located in `config/` to make it consistent.
 * `vendor/` is where the Composer managed dependencies are installed to.
-* `wp/` is where the WordPress core lives. It's also managed by Composer but can't be put under `vendor` due to WP limitations.
+* `page/` is where the WordPress core lives. It's also managed by Composer but can't be put under `vendor` due to WP limitations.
 
 
 ### Configuration Files
@@ -211,14 +211,7 @@ You will lose the separation between config and code and potentially put secure 
 
 ### Composer
 
-[Composer](http://getcomposer.org) is used to manage dependencies. Bedrock considers any 3rd party library as a dependency including WordPress itself and any plugins.
-
-See these two blogs for more extensive documentation:
-
-* [Using Composer with WordPress](http://roots.io/using-composer-with-wordpress/)
-* [WordPress Plugins with Composer](http://roots.io/wordpress-plugins-with-composer/)
-
-Screencast ($): [Using Composer With WordPress](http://roots.io/screencasts/using-composer-with-wordpress/)
+[Composer](http://getcomposer.org) is used to manage dependencies.
 
 #### Plugins
 
@@ -234,7 +227,9 @@ Whenever you add a new plugin or update the WP version, run `composer update` to
 
 `!web/app/plugins/plugin-name`
 
-Note: Some plugins may create files or folders outside of their given scope, or even make modifications to `wp-config.php` and other files in the `app` directory. These files should be added to your `.gitignore` file as they are managed by the plugins themselves, which are managed via Composer. Any modifications to `wp-config.php` that are needed should be moved into `config/application.php`. 
+Sample PLugins added in
+
+Note: Some plugins may create files or folders outside of their given scope, or even make modifications to `wp-config.php` and other files in the `app` directory. These files should be added to your `.gitignore` file as they are managed by the plugins themselves, which are managed via Composer. Any modifications to `wp-config.php` that are needed should be moved into `config/application.php`.
 
 #### Updating WP and plugin versions
 
@@ -244,31 +239,11 @@ Then running `composer update` will pull down the new version.
 
 #### Themes
 
-Themes can also be managed by Composer but should only be done so under two conditions:
-
-1. You're using a parent theme that won't be modified at all
-2. You want to separate out your main theme and use that as a standalone package
-
-Under most circumstances we recommend NOT doing #2 and instead keeping your main theme as part of your app's repository.
-
-Just like plugins, WPackagist maintains a Composer mirror of the WP theme directory. To require a theme, just use the `wpackagist-theme` namespace.
+A starter wp themes as a part of post load script in composer. Can be switched to any custom theme.
 
 #### Don't want it?
 
 Composer integration is the biggest part of Bedrock, so if you were going to remove it there isn't much point in using Bedrock.
-
-### Capistrano
-
-[Capistrano](http://www.capistranorb.com/) is a remote server automation and deployment tool. It will let you deploy or rollback your application in one command:
-
-* Deploy: `cap production deploy`
-* Rollback: `cap production deploy:rollback`
-
-Composer support is built-in so when you run a deploy, `composer install` is automatically run. Capistrano has a great [deploy flow](http://www.capistranorb.com/documentation/getting-started/flow/) that you can hook into and extend it.
-
-It's written in Ruby so it's needed *locally* if you want to use it. Capistrano was recently rewritten to be completely language agnostic, so if you previously wrote it off for being too Rails-centric, take another look at it.
-
-Screencast ($): [Deploying WordPress with Capistrano](http://roots.io/screencasts/deploying-wordpress-with-capistrano/)
 
 #### DB Syncing
 
@@ -278,14 +253,6 @@ Bedrock doesn't come with anything by default to do DB syncing yet. The best opt
 
 * Sync DB: `cap production wpcli:db:push` and `cap production wpcli:db:pull`
 * Sync uploads: `cap production wpcli:uploads:rsync:push` and `cap production wpcli:uploads:rsync:pull`
-
-#### Don't want it?
-
-You will lose the one-command deploys and built-in integration with Composer. Another deploy method will be needed as well.
-
-* Remove `Capfile`, `Gemfile`, and `Gemfile.lock`
-* Remove `config/deploy.rb`
-* Remove `config/deploy/` directory
 
 ### wp-cron
 
@@ -298,12 +265,6 @@ Bedrock disables the internal WP Cron via `define('DISABLE_WP_CRON', true);`. If
 Bedrock works with [WP-CLI](http://wp-cli.org/) just like any other WordPress project would. Previously we required WP-CLI in our `composer.json` file as a dependency. This has been removed since WP-CLI now recommends installing it globally with a `phar` file. It also caused conflicts if you tried using a global install.
 
 The `wp` command will automatically pick up Bedrock's subdirectory install as long as you run commands from within the project's directory (or deeper). Bedrock includes a `wp-cli.yml` file that sets the `path` option to `web/wp`. Use this config file for any further [configuration](http://wp-cli.org/config/).
-
-## Vagrant/Ansible
-
-Vagrant and Ansible integration with Bedrock can now be found in the separate [bedrock-ansible](https://github.com/roots/bedrock-ansible) project. Basic instructions exist in that project's README, but if you want a Vagrant box tied to a specific Bedrock based WP application, copy the example `Vagrantfile` into your app's repo and edit the necessary file paths.
-
-Note that using Ansible you no longer need to manually create/edit a `.env` file (or use `composer create-project` to generate one). Ansible will generate a `.env` based on its config and automatically generate salts/keys.
 
 ## mu-plugins autoloader
 
@@ -324,20 +285,3 @@ This enables the use of mu-plugins through Composer if their package type is `wo
 
 [Soil](https://github.com/roots/soil) is a package with its type set to `wordpress-plugin`. Since it implements `composer/installers` we can override its type.
 
-## Todo
-
-* Solution for basic database syncing/copying
-
-## Contributing
-
-Everyone is welcome to help [contribute](CONTRIBUTING.md) and improve this project. There are several ways you can contribute:
-
-* Reporting issues (please read [issue guidelines](https://github.com/necolas/issue-guidelines))
-* Suggesting new features
-* Writing or refactoring code
-* Fixing [issues](https://github.com/roots/bedrock/issues)
-* Replying to questions on the [forum](http://discourse.roots.io/)
-
-## Support
-
-Use the [Roots Discourse](http://discourse.roots.io/) forum to ask questions and get support.

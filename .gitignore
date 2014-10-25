@@ -1,5 +1,5 @@
 # WordPress
-web/wp
+web/page
 web/.htaccess
 
 # WP-CLI
@@ -15,6 +15,7 @@ sql-dump-*.sql
 web/app/plugins/*
 !web/app/plugins/.gitkeep
 web/app/mu-plugins/*
+web/app/themes/
 !web/app/mu-plugins/.gitkeep
 web/app/upgrade
 web/app/uploads/*
